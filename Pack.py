@@ -4,11 +4,11 @@ class CalculatorApp:
     def __init__(self, master):
         self.equation = ""
         
-        # Entry box
+        
         self.entry = tk.Text(master, state='disabled', height=2, width=30)
         self.entry.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
-        # Buttons
+        
         button_frame = tk.Frame(master)
         button_frame.pack()
         
