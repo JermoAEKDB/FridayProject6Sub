@@ -1,59 +1,64 @@
 import tkinter as tk
 
-def button_click(number):
-    current = entry.get()
-    entry.delete(0, tk.END)
-    entry.insert(tk.END, current + str(number))
+class CalculatorApp:
+    def __init__(self, master):
+        self.equation = ""
+        
+        # Entry box
+        self.entry = tk.Text(master, state='disabled', height=2, width=30)
+        self.entry.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        # Buttons
+        button_frame = tk.Frame(master)
+        button_frame.pack()
+        
+        numbers = [
+            '7', '8', '9',
+            '4', '5', '6',
+            '1', '2', '3',
+            '0', '.', '='
+        ]
+        
+        for num in numbers:
+            tk.Button(button_frame, text=num, command=lambda char=num: self.on_button_click(char)).grid(row=(numbers.index(num)//3), column=(numbers.index(num)%3), padx=5, pady=5)
+        
+        operations = [
+            '/', '*', '-', '+', 'C'
+        ]
+        
+        for operation in operations:
+            tk.Button(button_frame, text=operation, command=lambda char=operation: self.on_button_click(char)).grid(row=(operations.index(operation)//2), column=(numbers.index(num)%3 + 1), padx=5, pady=5)
 
-def button_clear():
-    entry.delete(0, tk.END)
+    def on_button_click(self, char):
+        if char == '=':
+            result = self.calculate()
+            self.clear_entry()
+            self.entry.insert(tk.END, result)
+        elif char == 'C':
+            self.clear_entry()
+        else:
+            self.equation += char
+            self.entry.config(state='normal')
+            self.entry.insert(tk.END, char)
 
-def perform_operation(operation):
-    global f_num
-    global math_operation
-    f_num = float(entry.get())
-    math_operation = operation
-    entry.delete(0, tk.END)
+    def calculate(self):
+        try:
+            result = str(eval(self.equation))
+            self.equation = result
+            return result
+        except:
+            return "Error"
 
-def button_equal():
-    second_number = float(entry.get())
-    entry.delete(0, tk.END)
-    if math_operation == "addition":
-        result = f_num + second_number
-    elif math_operation == "subtraction":
-        result = f_num - second_number
-    elif math_operation == "multiplication":
-        result = f_num * second_number
-    elif math_operation == "division":
-        result = f_num / second_number
-    entry.insert(0, result)
+    def clear_entry(self):
+        self.equation = ''
+        self.entry.config(state='normal')
+        self.entry.delete('1.0', tk.END)
+        self.entry.config(state='disabled')
 
-def toggle_entry_state():
-    entry.config(state=tk.NORMAL if entry["state"] == "disabled" else tk.DISABLED)
-    toggle_button.config(text="Disable Entry" if entry["state"] == "normal" else "Enable Entry")
+def main():
+    root = tk.Tk()
+    app = CalculatorApp(root)
+    root.mainloop()
 
-root = tk.Tk()
-root.title("Simple Calculator")
-
-entry = tk.Entry(root, width=35, borderwidth=5, state="disabled")
-entry.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
-
-buttons = [
-    ("1", 3, 0), ("2", 3, 1), ("3", 3, 2),
-    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2),
-    ("7", 1, 0), ("8", 1, 1), ("9", 1, 2),
-    ("0", 4, 0), ("+", 5, 0), ("=", 5, 1),
-    ("-", 4, 1), ("*", 4, 2), ("/", 5, 2),
-    ("Clear", 4, 1),
-]
-
-for (text, row, column) in buttons:
-    button = tk.Button(root, text=text, padx=40, pady=20,
-                       command=lambda t=text: button_click(t) if t.isdigit() else
-                       button_clear() if t == "Clear" else perform_operation(t))
-    button.grid(row=row, column=column)
-
-toggle_button = tk.Button(root, text="Enable Entry", padx=20, pady=20, command=toggle_entry_state)
-toggle_button.grid(row=6, column=0, columnspan=4)
-
-root.mainloop()
+if __name__ == "__main__":
+    main()
